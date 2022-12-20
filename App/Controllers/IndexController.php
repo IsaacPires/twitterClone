@@ -14,6 +14,8 @@ class indexController extends Action{
   }
 
   public function inscreverse(){
+    
+    $this->view->erroCadastro = false;
 
     $this->render('inscreverse');
 
@@ -27,8 +29,18 @@ class indexController extends Action{
     $usuario->__set('email', $_POST['email']);
     $usuario->__set('senha', $_POST['password']);
 
-    $usuario->save();
- 
+    if($usuario->validaCadastro() && count($usuario->validaEmailUnico()) == 0){
+      
+        $usuario->save();
+        $this->render('cadastro');
+      
+    }else{
+
+      $this->view->erroCadastro = true;
+
+      $this->render('inscreverse');
+    }
+
 
   }
 
