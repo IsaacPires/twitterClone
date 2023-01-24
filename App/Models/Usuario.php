@@ -27,7 +27,6 @@ class Usuario extends Model{
     $stmt->bindValue(':email', $this->__get('email'));
     $stmt->bindValue(':senha', $this->__get('senha'));
     $stmt->execute();
-    return $this;
   }
 
   public function validaCadastro(){
@@ -52,5 +51,21 @@ class Usuario extends Model{
     $stmt->execute();
 
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+  }
+
+  public function autenticar(){
+    $query = "select id, nome, email from usuarios where email = :email and senha = :senha";
+    $stmt = $this->db->prepare($query);
+    $stmt->bindValue(':email', $this->__get('email'));
+    $stmt->bindValue(':senha', $this->__get('senha'));
+    $stmt->execute();
+    $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+    
+    if($user['id'] && $user['nome']){
+      $this->id = $user['id'];
+      $this->nome = $user['nome'];
+    }
+    
+    return $this;
   }
 }

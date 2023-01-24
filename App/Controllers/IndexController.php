@@ -9,6 +9,8 @@ class indexController extends Action{
 
   public function index(){
 
+    $this->view->login = $_GET['login'] ?? '';
+
     $this->render('index');
 
   }
@@ -24,10 +26,11 @@ class indexController extends Action{
   public function registrar(){
 
     $usuario = Container::getModel('Usuario');
+    $log = Container::getModel('Log');
 
     $usuario->__set('nome', $_POST['name']);
     $usuario->__set('email', $_POST['email']);
-    $usuario->__set('senha', $_POST['password']);
+    $usuario->__set('senha', md5($_POST['password']));
 
     if($usuario->validaCadastro() && count($usuario->validaEmailUnico()) == 0){
       
