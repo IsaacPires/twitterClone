@@ -26,7 +26,6 @@ class indexController extends Action{
   public function registrar(){
 
     $usuario = Container::getModel('Usuario');
-    $log = Container::getModel('Log');
 
     $usuario->__set('nome', $_POST['name']);
     $usuario->__set('email', $_POST['email']);
