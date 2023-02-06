@@ -9,38 +9,53 @@ class AppController extends Action{
   
   public function timeline(){
 
-    session_start();
-
-    if(!$_SESSION['id'] || !$_SESSION['nome']):
-      header('LOCATION: \?login=error');
-    else:
-
-
-      $tweet = Container::getModel('Tweets');
-      $tweet->__set('id_usuario', $_SESSION['id']);
-      $tweets = $tweet->getAll();
-      $this->view->tweets = $tweets;
-
-      $this->render('timeline');
-    endif;
+    $this->verificaSession();
+    
+    $tweet = Container::getModel('Tweets');
+    $tweet->__set('id_usuario', $_SESSION['id']);
+    $tweets = $tweet->getAll();
+    $this->view->tweets = $tweets;
+    $this->render('timeline');
   }
 
   public function tweet(){
 
+    $this->verificaSession();
+
+    $tweet = Container::getModel('Tweets');
+    $tweet->__set('id_usuario', $_SESSION['id']);
+    $tweet->__set('tweet', $_POST['tweet']);
+    $tweet->save();
+    header('LOCATION: \timeline');
+  }
+
+  public function quemSeguir(){
+
+    $this->verificaSession();
+
+    $pesquisa = $_GET['pesquisa']; 
+    $result = array();
+    if(isset($pesquisa) && $pesquisa != ''){
+      $searchResult = Container::getModel('Usuario');
+      $searchResult->__set('nome', $pesquisa);
+      $result = $searchResult->searchFollow();
+    }
+
+    $this->view->seguir = $result;
+    $this->render('quemSeguir');
+
+
+  }
+
+  private function verificaSession(){
+
     session_start();
 
     if(!$_SESSION['id'] || !$_SESSION['nome']):
       header('LOCATION: \?login=error');
     else:
-      $tweet = Container::getModel('Tweets');
-
-      $tweet->__set('id_usuario', $_SESSION['id']);
-      $tweet->__set('tweet', $_POST['tweet']);
-      $tweet->save();
-      header('LOCATION: \timeline');
-      
+      return true;
     endif;
   }
-  
 
 }
