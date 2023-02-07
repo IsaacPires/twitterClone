@@ -29,14 +29,17 @@ class AppController extends Action{
     header('LOCATION: \timeline');
   }
 
-  public function quemSeguir(){
+  public function quemSeguir(){ 
 
     $this->verificaSession();
+
+    $this->view->usuarioAtual = $_SESSION['nome'];
 
     $pesquisa = $_GET['pesquisa']; 
     $result = array();
     if(isset($pesquisa) && $pesquisa != ''){
       $searchResult = Container::getModel('Usuario');
+      $searchResult->__set('id', $_SESSION['id']);
       $searchResult->__set('nome', $pesquisa);
       $result = $searchResult->searchFollow();
     }
