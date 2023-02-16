@@ -41,13 +41,31 @@ class AppController extends Action{
       $searchResult = Container::getModel('Usuario');
       $searchResult->__set('id', $_SESSION['id']);
       $searchResult->__set('nome', $pesquisa);
+      $_SESSION['pesquisa'] = $pesquisa;
       $result = $searchResult->searchFollow();
     }
 
     $this->view->seguir = $result;
     $this->render('quemSeguir');
+  }
 
+  public function acao(){
+    $this->verificaSession();
 
+    $action = isset($_GET['acao']) ? $_GET['acao']: '';
+    $id_user = isset($_GET['id_user']) ? $_GET['id_user']: '';
+    $user = Container::getModel('usuarios_seguidores');
+    $user->__set('id_usuario', $_SESSION['id']);
+    if($action == 'seguir'):
+      $user->__set('id_usuario_seguindo', $id_user);
+      $user->follow();
+
+    elseif( $action == 'deixar_seguir'):
+      $user->__set('id_usuario_seguindo', $id_user);
+      $user->unfollow();
+    endif;
+    $manterPesquisa = $_SESSION['pesquisa'];
+    header('LOCATION:\quem_seguir?pesquisa='.$manterPesquisa);
   }
 
   private function verificaSession(){

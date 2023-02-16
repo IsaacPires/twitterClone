@@ -6,6 +6,7 @@ use MF\Model\Model;
 class Usuario extends Model{
 
   private $id;
+  private $idUser;
   private $nome;
   private $email;
   private $senha;
@@ -71,14 +72,24 @@ class Usuario extends Model{
 
   public function searchFollow(){ 
     $query = "
-    select id, nome, email 
+    select u.id, u.nome, u.email, 
+    (
+      select
+       count(*)
+      from
+       usuarios_seguidores as us
+      where
+       us.id_usuario = :idAtual
+       and us.id_usuario_seguindo = u.id
+    ) as seguindo_sn
     from  
-      usuarios
+      usuarios as u
     where 
-      nome like :nome and id != :idAtual";
+      u.nome like :nome and u.id != :idAtual";
     $stmt = $this->db->prepare($query);
     $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
     $stmt->bindValue(':idAtual', $this->id);
+
     $stmt->execute();
     $user = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     return $user;

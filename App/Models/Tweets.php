@@ -33,7 +33,7 @@ class Tweets extends Model{
     $query = "
     select t.id, t.id_usuario, u.nome, t.tweet, t.date 
     from tweets as t
-    left join Usuarios as u
+    left join usuarios as u
     on t.id_usuario = u.id
     where id_usuario = :id_usuario
     order by 
