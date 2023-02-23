@@ -10,7 +10,7 @@ class AppController extends Action{
   public function timeline(){
 
     $this->verificaSession();
-    
+    $this->count();
     $tweet = Container::getModel('Tweets');
     $tweet->__set('id_usuario', $_SESSION['id']);
     $tweets = $tweet->getAll();
@@ -32,9 +32,7 @@ class AppController extends Action{
   public function quemSeguir(){ 
 
     $this->verificaSession();
-
     $this->view->usuarioAtual = $_SESSION['nome'];
-
     $pesquisa = $_GET['pesquisa']; 
     $result = array();
     if(isset($pesquisa) && $pesquisa != ''){
@@ -44,14 +42,13 @@ class AppController extends Action{
       $_SESSION['pesquisa'] = $pesquisa;
       $result = $searchResult->searchFollow();
     }
-
+    
     $this->view->seguir = $result;
     $this->render('quemSeguir');
   }
 
   public function acao(){
     $this->verificaSession();
-
     $action = isset($_GET['acao']) ? $_GET['acao']: '';
     $id_user = isset($_GET['id_user']) ? $_GET['id_user']: '';
     $user = Container::getModel('usuarios_seguidores');
@@ -66,12 +63,36 @@ class AppController extends Action{
     endif;
     $manterPesquisa = $_SESSION['pesquisa'];
     header('LOCATION:\quem_seguir?pesquisa='.$manterPesquisa);
+    $this->count();
+  }
+
+  public function deleteTweet(){
+
+    $this->verificaSession();
+
+    $tweet = Container::getModel('Tweets');
+    $tweet->__set('tweet', $_GET['deletetweet']);
+    $tweet->delete();
+    header('LOCATION: \timeline');
+  }
+
+  private function count(){
+    $this->verificaSession();
+
+    $user = Container::getModel('Usuario');
+    $user->__set('id', $_SESSION['id']);
+    $countTweet = $user->countTweets();
+    $countSeguindo = $user->countSeguindo();
+    $countSeguidores = $user->countSeguidores();
+
+    $_SESSION['countTweets'] = $countTweet[0]["tweets"];
+    $_SESSION['seguindo']    = $countSeguindo[0]["seguindo"];
+    $_SESSION['seguidores']  = $countSeguidores[0]["seguidores"];
   }
 
   private function verificaSession(){
 
     session_start();
-
     if(!$_SESSION['id'] || !$_SESSION['nome']):
       header('LOCATION: \?login=error');
     else:

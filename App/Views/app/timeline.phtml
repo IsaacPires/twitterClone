@@ -27,7 +27,7 @@
 					
 					<div class="row mt-2 mb-2">
 						<div class="col mb-2">
-							<span class="perfilPainelNome"><?= $this->view->tweets[0]['nome']; ?></span>
+							<span class="perfilPainelNome"><?= $_SESSION["nome"]; ?></span>
 						</div>
 					</div>
 
@@ -35,17 +35,17 @@
 
 						<div class="col">
 							<span class="perfilPainelItem">Tweets</span><br />
-							<span class="perfilPainelItemValor">0</span>
+							<span class="perfilPainelItemValor"> <?= $_SESSION['countTweets']; ?></span>
 						</div>
 
 						<div class="col">
 							<span class="perfilPainelItem">Seguindo</span><br />
-							<span class="perfilPainelItemValor">0</span>
+							<span class="perfilPainelItemValor"><?= $_SESSION['seguindo']; ?></span>
 						</div>
 
 						<div class="col">
 							<span class="perfilPainelItem">Seguidores</span><br />
-							<span class="perfilPainelItemValor">0</span>
+							<span class="perfilPainelItemValor"><?= $_SESSION['seguidores'] ?></span>
 						</div>
 
 					</div>
@@ -69,18 +69,24 @@
 				</div>
 			</div>
 
-			<?php foreach ($this->view->tweets as $key => $tweet) {?>
+			<?php
+
+                                                            use App\Models\Tweets;
+
+ foreach ($this->view->tweets as $key => $tweet) {?>
 				<div class="row tweet">
 					<div class="col">
 						<p><strong><?= $tweet['nome']; ?></strong> <small><span class="text text-muted">- <?php $data = new DateTime($tweet['date']); echo $data->format('d/m/Y H:i:s'); ?></span></p> </small>
 						<p><?= $tweet['tweet']; ?></p>
 
 						<br />
-						<form>
-							<div class="col d-flex justify-content-end">
-								<button type="submit" class="btn btn-danger"><small>Remover</small></button>
-							</div>
-						</form>		
+						<?php if($_SESSION['id']==$tweet["id_usuario"]): ?>
+							<form action="\deleteTweet?deletetweet=<?= $tweet['id'] ?>"  method="POST">
+								<div class="col d-flex justify-content-end">
+									<button type="submit" class="btn btn-danger"><small>Remover</small></button>
+								</div>
+							</form>	
+							<?php endif;?>
 					</div>
 				</div>
 			<?php } ?>
