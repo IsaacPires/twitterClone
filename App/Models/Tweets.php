@@ -52,6 +52,35 @@ class Tweets extends Model{
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
   }
 
+  public function getByPage($limit, $offset){
+    $query = "
+    select t.id, t.id_usuario, u.nome, t.tweet, t.date 
+    from tweets as t
+    left join usuarios as u
+    on t.id_usuario = u.id
+    where 
+    t.id_usuario = :id_usuario 
+    or
+    t.id_usuario in (
+    select id_usuario_seguindo 
+    from usuarios_seguidores 
+    where id_usuario = :id_usuario 
+    )
+    order by 
+      t.date desc
+    limit
+      {$limit}
+    offset
+      {$offset}
+    
+    ";
+    
+    $stmt = $this->db->prepare($query);
+    $stmt->bindValue(':id_usuario', $this->__get('id_usuario'));
+    $stmt->execute();
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+  }
+
   public function delete(){
     $query = 'Delete from Tweets where id = :id';
     $stmt = $this->db->prepare($query);

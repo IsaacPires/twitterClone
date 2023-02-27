@@ -13,7 +13,14 @@ class AppController extends Action{
     $this->count();
     $tweet = Container::getModel('Tweets');
     $tweet->__set('id_usuario', $_SESSION['id']);
-    $tweets = $tweet->getAll();
+
+    $limit  = 10;
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $offset = isset($_GET['page']) ? ($page - 1) * $limit  : 0;
+    $this->view->pagina_ativa = $page;
+    $this->view->pagination = ceil($_SESSION['countTweets'] / 10);
+
+    $tweets = $tweet->getByPage($limit, $offset);
     $this->view->tweets = $tweets;
     $this->render('timeline');
   }

@@ -91,8 +91,19 @@
 				</div>
 			<?php } ?>
 
-		</div>
+			<nav aria-label="navigation">
+				<ul class="pagination">
+					<li class="page-item"><a class="page-link" href="?page=1">Primeiro</a></li>
+					<?php for($i = 1 ; $i <= $this->view->pagination ; $i++){ ?>
+						<li class="page-item <?= $this->view->pagina_ativa == $i ? 'active' : '' ?>">
+							<a class="page-link " href="?page=<?=$i?>"><?=$i?></a></li>
+					<?php } ?>
+					<li class="page-item"><a class="page-link" href="?page=<?= $this->view->pagination?>">Próximo</a></li>
+				</ul>
+			</nav>
 
+			
+		</div>
 
 		<div class="col-md-3">
 			<div class="quemSeguir">
@@ -102,5 +113,7 @@
 			</div>
 		</div>
 
+
+		
 	</div>
 </div>
